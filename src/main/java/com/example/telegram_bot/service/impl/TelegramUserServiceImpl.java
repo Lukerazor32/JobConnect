@@ -1,7 +1,8 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.repository.TelegramUserRepository;
 import com.example.telegram_bot.repository.entity.TelegramUser;
+import com.example.telegram_bot.service.TelegramUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

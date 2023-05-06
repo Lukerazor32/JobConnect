@@ -1,7 +1,8 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.dto.CurrentSongList;
 import com.example.telegram_bot.dto.Song;
+import com.example.telegram_bot.service.InlineButtonService;
 import lombok.Getter;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;

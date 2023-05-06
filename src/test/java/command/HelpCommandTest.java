@@ -21,6 +21,6 @@ public class HelpCommandTest extends AbstractCommandTest {
 
     @Override
     State getCommand() {
-        return new HelpCommand(sendBotMessageService, music_bot);
+        return new HelpCommand(sendBotMessageService, jobConnect);
     }
 }

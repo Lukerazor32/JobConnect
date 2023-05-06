@@ -1,7 +1,7 @@
 package com.example.telegram_bot.command.admin.addsong;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.MoodFolderService;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ChooseFolderCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final MoodFolderService moodFolderService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
     private final List<String> similarSongs;
     private final TelegramMusicService telegramMusicService;
 
@@ -28,12 +28,12 @@ public class ChooseFolderCommand implements State {
             SendBotMessageService sendBotMessageService,
             MoodFolderService moodFolderService,
             TelegramMusicService telegramMusicService,
-            Music_bot music_bot,
+            JobConnect jobConnect,
             List<String> similarSongs) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;
         this.telegramMusicService = telegramMusicService;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
         this.similarSongs = similarSongs;
     }
 
@@ -73,7 +73,7 @@ public class ChooseFolderCommand implements State {
                         return;
                     }
                 }
-                user.setState(new ConfirmCommand(sendBotMessageService, telegramMusicService, chooseFolders, similarSongs, music_bot));
+                user.setState(new ConfirmCommand(sendBotMessageService, telegramMusicService, chooseFolders, similarSongs, jobConnect));
             }
             catch (NumberFormatException e) {
                 System.out.println(e.getMessage());

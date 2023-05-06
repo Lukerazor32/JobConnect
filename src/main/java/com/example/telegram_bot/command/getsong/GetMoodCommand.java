@@ -1,27 +1,23 @@
 package com.example.telegram_bot.command.getsong;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.repository.entity.TelegramSong;
 import com.example.telegram_bot.service.*;
+import com.example.telegram_bot.service.impl.DownloadSongRequest;
 import com.example.telegram_bot.state.State;
 import com.example.telegram_bot.thread.FindLinkScraping;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Audio;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.InputMediaAudio;
 import com.pengrad.telegrambot.request.DeleteMessage;
-import com.pengrad.telegrambot.request.SendAudio;
 import com.pengrad.telegrambot.response.MessagesResponse;
-import com.pengrad.telegrambot.response.SendResponse;
 import org.springframework.stereotype.Component;
 import com.pengrad.telegrambot.request.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import com.pengrad.telegrambot.model.request.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,18 +29,18 @@ public class GetMoodCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final MoodFolderService moodFolderService;
     private final TelegramMusicService telegramMusicService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
 
     private SendMediaGroup sendMediaGroup;
 
     private final static String TECHWORKSMESSAGE = "В данный момент ведутся технические работы. Приходите позже";
 
-    public GetMoodCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, TelegramMusicService telegramMusicService, Music_bot music_bot) {
+    public GetMoodCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, TelegramMusicService telegramMusicService, JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;
         this.telegramMusicService = telegramMusicService;
 
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
     }
 
     @Override
@@ -124,7 +120,7 @@ public class GetMoodCommand implements State {
                     try {
                         sendMediaGroup =new SendMediaGroup(user.getChatId(), sendSongs);
 
-                        TelegramBot bot = new TelegramBot(music_bot.getBotToken());
+                        TelegramBot bot = new TelegramBot(jobConnect.getBotToken());
 
                         MessagesResponse response = bot.execute(sendMediaGroup);
                         System.out.println(response);

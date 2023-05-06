@@ -1,16 +1,16 @@
 package com.example.telegram_bot.command.admin.addsong;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.dto.CurrentSongList;
 import com.example.telegram_bot.service.*;
+import com.example.telegram_bot.service.impl.InlineButtonSongSelection;
+import com.example.telegram_bot.service.impl.SimilarSongsRequest;
 import com.example.telegram_bot.state.State;
-import com.example.telegram_bot.thread.DownloadSongsScraping;
 import com.example.telegram_bot.thread.SimilarSongsScraping;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,17 +20,17 @@ public class AddSongCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final MoodFolderService moodFolderService;
     private final TelegramMusicService telegramMusicService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
     private List<CurrentSongList> currentSongList;
 
     private InlineButtonSongSelection inlineButtonSongSelection;
     private SimilarSongsRequest similarSongsRequest;
 
-    public AddSongCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, TelegramMusicService telegramMusicService, Music_bot music_bot) {
+    public AddSongCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, TelegramMusicService telegramMusicService, JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;
         this.telegramMusicService = telegramMusicService;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class AddSongCommand implements State {
                     sendBotMessageService,
                     moodFolderService,
                     telegramMusicService,
-                    music_bot,
+                    jobConnect,
                     similarSongs));
         }
     }

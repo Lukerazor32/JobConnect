@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class Song {
     private String title;
     private Long id;
-    private Container container;
     private String artist;
     private String duration;
     private Integer bpm;
@@ -21,7 +20,7 @@ public class Song {
     public String toString() {
 
         return title + "\n"
-                + container.toString() + ")\nArtist - "
+                + ")\nArtist - "
                 + artist + " \nDuration - "
                 + duration;
     }

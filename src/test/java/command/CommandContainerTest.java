@@ -1,7 +1,7 @@
 package command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.command.CommandContainer;
 import com.example.telegram_bot.command.UnknownCommand;
 import com.example.telegram_bot.service.*;
@@ -21,9 +21,9 @@ public class CommandContainerTest {
         TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
         MoodFolderService moodFolderService = Mockito.mock(MoodFolderService.class);
         TelegramMusicService telegramMusicService = Mockito.mock(TelegramMusicService.class);
-        Music_bot music_bot = Mockito.mock(Music_bot.class);
+        JobConnect jobConnect = Mockito.mock(JobConnect.class);
         user = Mockito.mock(User.class);
-        commandContainer = new CommandContainer(sendBotMessageService, telegramUserService, music_bot, moodFolderService, telegramMusicService);
+        commandContainer = new CommandContainer(sendBotMessageService, telegramUserService, jobConnect, moodFolderService, telegramMusicService);
     }
 
     @Test

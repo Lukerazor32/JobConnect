@@ -1,6 +1,6 @@
 package com.example.telegram_bot.thread;
 
-import com.example.telegram_bot.service.DownloadSongRequest;
+import com.example.telegram_bot.service.impl.DownloadSongRequest;
 
 import java.util.List;
 

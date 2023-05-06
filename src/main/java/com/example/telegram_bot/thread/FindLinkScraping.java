@@ -1,8 +1,7 @@
 package com.example.telegram_bot.thread;
 
 import com.example.telegram_bot.repository.entity.TelegramSong;
-import com.example.telegram_bot.service.DownloadSongRequest;
-import com.pengrad.telegrambot.model.request.InputMediaAudio;
+import com.example.telegram_bot.service.impl.DownloadSongRequest;
 
 import java.util.List;
 

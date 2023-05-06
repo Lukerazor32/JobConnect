@@ -1,7 +1,7 @@
 package com.example.telegram_bot.command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
@@ -11,15 +11,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class StatCommand implements State {
     private final TelegramUserService telegramUserService;
     private final SendBotMessageService sendBotMessageService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
 
     public final static String STAT_MESSAGE = "Music bot использует %s человек.";
 
     @Autowired
-    public StatCommand(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService, Music_bot music_bot) {
+    public StatCommand(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService, JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.telegramUserService = telegramUserService;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
     }
 
     @Override

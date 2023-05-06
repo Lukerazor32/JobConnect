@@ -1,4 +1,4 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.dto.CurrentSong;
 import com.example.telegram_bot.dto.CurrentSongList;

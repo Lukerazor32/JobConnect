@@ -7,16 +7,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MUSIC_BOT" />
+        <module name="JobConnect" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MUSIC_BOT" target="11" />
+      <module name="JobConnect" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="MUSIC_BOT" options="-parameters" />
+      <module name="JobConnect" options="-parameters" />
     </option>
   </component>
 </project>

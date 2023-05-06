@@ -1,7 +1,8 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.dto.Song;
 import com.example.telegram_bot.repository.entity.TelegramSong;
+import com.example.telegram_bot.service.RequestService;
 import kong.unirest.GenericType;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
