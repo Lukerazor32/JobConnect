@@ -1,27 +1,18 @@
 package com.example.telegram_bot.command.admin.addsong;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.repository.entity.TelegramSong;
-import com.example.telegram_bot.service.DownloadSongRequest;
+import com.example.telegram_bot.service.impl.DownloadSongRequest;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.TelegramMusicService;
 import com.example.telegram_bot.state.State;
 import com.example.telegram_bot.thread.DownloadSongsScraping;
-import com.example.telegram_bot.thread.FindLinkScraping;
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.request.InputMediaAudio;
-import com.pengrad.telegrambot.request.DeleteMessage;
-import com.pengrad.telegrambot.request.SendMediaGroup;
-import com.pengrad.telegrambot.response.MessagesResponse;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +21,7 @@ public class ConfirmCommand implements State {
     private final List<MoodFolder> moodFolders;
     private final List<String> similarSongs;
     private final TelegramMusicService telegramMusicService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
     private int count;
 
     public ConfirmCommand(
@@ -38,12 +29,12 @@ public class ConfirmCommand implements State {
             TelegramMusicService telegramMusicService,
             List<MoodFolder> moodFolder,
             List<String> similarSongs,
-            Music_bot music_bot) {
+            JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.telegramMusicService = telegramMusicService;
         this.moodFolders = moodFolder;
         this.similarSongs = similarSongs;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
         count = 0;
     }
 

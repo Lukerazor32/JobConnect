@@ -1,9 +1,9 @@
 package command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.service.SendBotMessageService;
-import com.example.telegram_bot.service.SendBotMessageServiceImpl;
+import com.example.telegram_bot.service.impl.SendBotMessageServiceImpl;
 import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 abstract class AbstractCommandTest {
-    protected Music_bot music_bot = Mockito.mock(Music_bot.class);
+    protected JobConnect jobConnect = Mockito.mock(JobConnect.class);
     protected TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
-    protected SendBotMessageService sendBotMessageService = new SendBotMessageServiceImpl(music_bot);
+    protected SendBotMessageService sendBotMessageService = new SendBotMessageServiceImpl(jobConnect);
 
     abstract String getCommandName();
 
@@ -46,6 +46,6 @@ abstract class AbstractCommandTest {
         getCommand().execute(update, user);
 
         //then
-        Mockito.verify(music_bot).execute(sendMessage);
+        Mockito.verify(jobConnect).execute(sendMessage);
     }
 }

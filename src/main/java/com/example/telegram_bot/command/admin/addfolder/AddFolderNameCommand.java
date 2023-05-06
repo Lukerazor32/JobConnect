@@ -1,7 +1,7 @@
 package com.example.telegram_bot.command.admin.addfolder;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.MoodFolderService;
@@ -13,14 +13,14 @@ import java.util.List;
 public class AddFolderNameCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final MoodFolderService moodFolderService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
 
 
 
-    public AddFolderNameCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, Music_bot music_bot) {
+    public AddFolderNameCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
     }
 
 
@@ -44,7 +44,7 @@ public class AddFolderNameCommand implements State {
         if(update.hasMessage() && update.getMessage().hasText()) {
             String folderName = update.getMessage().getText();
 
-            user.setState(new ConfirmCommand(sendBotMessageService, moodFolderService, folderName, music_bot));
+            user.setState(new ConfirmCommand(sendBotMessageService, moodFolderService, folderName, jobConnect));
         }
         else {
             sendBotMessageService.sendMessage(user.getChatId(), "Название папки должно содержать текст");

@@ -1,7 +1,7 @@
 package com.example.telegram_bot.command.admin.addfolder;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.command.NoCommand;
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.service.SendBotMessageService;
@@ -13,7 +13,7 @@ public class ConfirmCommand implements State {
 
     private final SendBotMessageService sendBotMessageService;
     private final MoodFolderService moodFolderService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
 
     private final String folderName;
 
@@ -21,11 +21,11 @@ public class ConfirmCommand implements State {
             SendBotMessageService sendBotMessageService,
             MoodFolderService moodFolderService,
             String folderName,
-            Music_bot music_bot) {
+            JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;
         this.folderName = folderName;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
     }
 
     @Override

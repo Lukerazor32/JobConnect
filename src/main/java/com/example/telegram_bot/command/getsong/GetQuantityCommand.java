@@ -1,7 +1,7 @@
 package com.example.telegram_bot.command.getsong;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.repository.entity.TelegramSong;
 import com.example.telegram_bot.service.RequestService;
 import com.example.telegram_bot.service.SendBotMessageService;
@@ -18,18 +18,18 @@ import java.util.Random;
 public class GetQuantityCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final RequestService requestService;
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
     private final List<TelegramSong> songsList;
 
 
 
     public GetQuantityCommand(SendBotMessageService sendBotMessageService,
                               RequestService requestService,
-                              Music_bot music_bot,
+                              JobConnect jobConnect,
                               List<TelegramSong> songsList) {
         this.sendBotMessageService = sendBotMessageService;
         this.requestService = requestService;
-        this.music_bot = music_bot;
+        this.jobConnect = jobConnect;
         this.songsList = songsList;
     }
 
@@ -69,7 +69,7 @@ public class GetQuantityCommand implements State {
                 }
                 try{
                     SendMediaGroup sendMediaGroup = new SendMediaGroup(user.getChatId().toString(), inputMedia);
-                    music_bot.execute(sendMediaGroup);
+                    jobConnect.execute(sendMediaGroup);
                 }
                 catch (IllegalArgumentException e) {
                     System.out.println(e);

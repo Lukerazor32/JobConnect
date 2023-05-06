@@ -1,8 +1,9 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.repository.entity.MoodFolder;
 import com.example.telegram_bot.repository.MoodFolderRepository;
 import com.example.telegram_bot.repository.entity.TelegramSong;
+import com.example.telegram_bot.service.MoodFolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

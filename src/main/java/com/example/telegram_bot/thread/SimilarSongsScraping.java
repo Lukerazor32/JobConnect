@@ -1,9 +1,7 @@
 package com.example.telegram_bot.thread;
 
 import com.example.telegram_bot.dto.CurrentSongList;
-import com.example.telegram_bot.service.SimilarSongsRequest;
-
-import java.util.List;
+import com.example.telegram_bot.service.impl.SimilarSongsRequest;
 
 public class SimilarSongsScraping implements Runnable {
     private SimilarSongsRequest similarSongsRequest;

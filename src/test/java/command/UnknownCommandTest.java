@@ -21,6 +21,6 @@ public class UnknownCommandTest extends AbstractCommandTest {
 
     @Override
     State getCommand() {
-        return new UnknownCommand(sendBotMessageService, music_bot);
+        return new UnknownCommand(sendBotMessageService, jobConnect);
     }
 }

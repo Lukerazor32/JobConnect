@@ -1,6 +1,7 @@
-package com.example.telegram_bot.service;
+package com.example.telegram_bot.service.impl;
 
-import com.example.telegram_bot.bot.Music_bot;
+import com.example.telegram_bot.bot.JobConnect;
+import com.example.telegram_bot.service.SendBotMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,13 +15,13 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Service
 public class SendBotMessageServiceImpl implements SendBotMessageService {
 
-    private final Music_bot music_bot;
+    private final JobConnect jobConnect;
 
     private SendMessage sendMessage = new SendMessage();
 
     @Autowired
-    public SendBotMessageServiceImpl(Music_bot music_bot) {
-        this.music_bot = music_bot;
+    public SendBotMessageServiceImpl(JobConnect jobConnect) {
+        this.jobConnect = jobConnect;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
         sendMessage.setText(message);
 
         try {
-            music_bot.execute(sendMessage);
+            jobConnect.execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

@@ -1,12 +1,12 @@
 version: '3.8'
 
 services:
-  music-db:
+  job_connect:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: 'music_db_user'
-      POSTGRES_PASSWORD: 'YPHYkpdm?'
-      POSTGRES_DB: 'music_dbd'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'admin'
+      POSTGRES_DB: 'job_connect'
     ports:
-      - '5432:5432'
+      - '3307:3307'
