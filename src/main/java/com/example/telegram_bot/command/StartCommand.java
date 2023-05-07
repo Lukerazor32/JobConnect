@@ -1,18 +1,23 @@
 package com.example.telegram_bot.command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.dto.Vacancies;
-import com.example.telegram_bot.dto.Vacancy;
+import com.example.telegram_bot.dto.Specialization;
 import com.example.telegram_bot.repository.entity.TelegramUser;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
-import kong.unirest.GenericType;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
-import kong.unirest.json.JSONArray;
+import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class StartCommand implements State {
     private final SendBotMessageService sendBotMessageService;
@@ -88,17 +93,65 @@ public class StartCommand implements State {
 ////        }
 //        System.out.println(jsonNode1 + " \n" + jsonArray);
 
-        Vacancies jsonResponse2
-                = Unirest.get("https://career.habr.com/api/frontend/vacancies")
-                .queryString("q", "python")
-                .queryString("sort", "relevance")
-                .queryString("type", "all")
-                .queryString("currency", "RUR")
-                .asObject(new GenericType<Vacancies>() {
-                })
-                .getBody();
-        for (Vacancy vacancy : jsonResponse2.getList()) {
-            System.out.println(vacancy.getId() + " " + vacancy.getHref());
+//        Vacancies jsonResponse2
+//                = Unirest.get("https://career.habr.com/api/frontend/vacancies")
+//                .queryString("q", "python")
+//                .queryString("sort", "relevance")
+//                .queryString("type", "all")
+//                .queryString("currency", "RUR")
+//                .asObject(new GenericType<Vacancies>() {
+//                })
+//                .getBody();
+//        String url = jsonResponse2.getList().get(0).getHref();
+//        for (Vacancy vacancy : jsonResponse2.getList()) {
+//            System.out.println(vacancy.getId() + " " + vacancy.getHref() + " " + vacancy.getTitle());
+//        }
+//
+//        try {
+//            Document doc = Jsoup.connect("https://career.habr.com" + url).get();
+//            Element info = doc.select(".basic-section--appearance-vacancy-description").first();
+//            Elements descript = info.select(".style-ugc > *");
+//            System.out.println(descript);
+//            String response = "";
+//            for (Element el : descript) {
+//                String str = el.html();
+//                if (str.contains("<li>")) {
+//                    str = str.replace("<li>", "\n\uD83D\uDE1D");
+//                    str = str.replace("</li>", " ");
+//                    System.out.println(str);
+//                    response += str;
+//                } else {
+//                    response += el.text();
+//                }
+//            }
+//            sendBotMessageService.sendMessage(user.getChatId(), response);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        try {
+            // Получаем HTML страницу
+            Document doc = Jsoup.connect("https://career.habr.com/vacancies").get();
+
+            // Находим скрипты внутри HTML
+            Element scriptElement = doc.select("script[data-ssr-state=true]").first();
+
+            // Извлекаем содержимое скрипта
+            String script = scriptElement.html();
+            System.out.println(script);
+
+            // Ищем конкретные JSON объекты в скрипте
+            JSONObject jsonObject = new JSONObject(script);
+            JSONArray jsonArray = jsonObject.getJSONObject("search").getJSONArray("groups");
+
+            Gson gson = new Gson();
+            Specialization[] specialization = gson.fromJson(jsonArray.toString(), Specialization[].class);
+
+            for (Specialization sp : specialization)
+                System.out.println(sp.getId() + " " + sp.getTitle());
+//
+//            System.out.println(dataObject.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         execute(update, user);
     }
