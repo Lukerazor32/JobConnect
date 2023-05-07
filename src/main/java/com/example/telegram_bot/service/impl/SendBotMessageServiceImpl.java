@@ -4,6 +4,7 @@ import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.service.SendBotMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -27,8 +28,9 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
     @Override
     public void sendMessage(Long chatId, String message) {
         sendMessage.setChatId(chatId.toString());
-        sendMessage.enableHtml(false);
+        sendMessage.enableHtml(true);
         sendMessage.setText(message);
+
 
         try {
             jobConnect.execute(sendMessage);
