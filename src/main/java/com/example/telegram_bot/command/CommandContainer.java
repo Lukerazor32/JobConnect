@@ -9,6 +9,7 @@ import com.example.telegram_bot.command.admin.deletesong.DeleteSongCommand;
 import com.example.telegram_bot.command.admin.help.AdminHelpCommand;
 import com.example.telegram_bot.command.admin.updatefolder.ChooseFolderCommand;
 import com.example.telegram_bot.command.getsong.GetMoodCommand;
+import com.example.telegram_bot.command.settings.LocationCommand;
 import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.state.State;
 import com.google.common.collect.ImmutableMap;
@@ -26,24 +27,19 @@ public class CommandContainer {
                             TelegramUserService telegramUserService,
                             JobConnect jobConnect,
                             MoodFolderService moodFolderService,
-                            TelegramMusicService telegramMusicService) {
+                            TelegramMusicService telegramMusicService,
+                            HabrRequest habrRequest) {
         commandMap = ImmutableMap.<String, State>builder()
-                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService))
+                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService, habrRequest))
                 .put(GETSONG.getCommandName(), new GetMoodCommand(sendBotMessageService, moodFolderService, telegramMusicService, jobConnect))
                 .put(HELP.getCommandName(), new HelpCommand(sendBotMessageService, jobConnect))
                 .put(NO.getCommandName(), new NoCommand(sendBotMessageService))
-                .put(STAT.getCommandName(), new StatCommand(sendBotMessageService, telegramUserService, jobConnect))
+                .put(SETLOCATION.getCommandName(), new LocationCommand(sendBotMessageService, telegramUserService, habrRequest))
                 .build();
 
         unknownCommand = new UnknownCommand(sendBotMessageService, jobConnect);
 
         commandAdminMap = ImmutableMap.<String, State>builder()
-                .put(ADMINHELP.getCommandName(), new AdminHelpCommand(sendBotMessageService))
-                .put(ADDSONG.getCommandName(), new AddSongCommand(sendBotMessageService, moodFolderService, telegramMusicService, jobConnect))
-                .put(DELETESONG.getCommandName(), new DeleteSongCommand(sendBotMessageService, telegramMusicService, jobConnect))
-                .put(ADDFOLDER.getCommandName(), new AddFolderNameCommand(sendBotMessageService, moodFolderService, jobConnect))
-                .put(DELETEFOLDER.getCommandName(), new DeleteFolderCommand(sendBotMessageService, moodFolderService, telegramMusicService))
-                .put(UPDATEFOLDER.getCommandName(), new ChooseFolderCommand(sendBotMessageService, moodFolderService))
                 .build();
     }
 

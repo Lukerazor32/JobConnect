@@ -11,21 +11,7 @@ import static com.example.telegram_bot.command.CommandName.*;
 public class AdminHelpCommand implements State {
     private final SendBotMessageService sendBotMessageService;
 
-    public final static String HELP_MESSAGE = String.format("Доступные админ-команды:" +
-                    "\n\n" +
-                    "%s - статистика бота" +
-                    "\n" +
-                    "%s - добавить папку" +
-                    "\n" +
-                    "%s - изменить папку" +
-                    "\n" +
-                    "%s - удалить папку" +
-                    "\n" +
-                    "%s - добавить песню" +
-                    "\n" +
-                    "%s - удалить песню",
-            STAT.getCommandName(), ADDFOLDER.getCommandName(), UPDATEFOLDER.getCommandName(),
-            DELETEFOLDER.getCommandName(), ADDSONG.getCommandName(), DELETESONG.getCommandName());
+    public final static String HELP_MESSAGE = "";
 
     public AdminHelpCommand(SendBotMessageService sendBotMessageService) {
         this.sendBotMessageService = sendBotMessageService;

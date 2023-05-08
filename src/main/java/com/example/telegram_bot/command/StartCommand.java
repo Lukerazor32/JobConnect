@@ -1,8 +1,10 @@
 package com.example.telegram_bot.command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.dto.Specialization;
+import com.example.telegram_bot.command.settings.LocationCommand;
+import com.example.telegram_bot.dto.specialization.Specialization;
 import com.example.telegram_bot.repository.entity.TelegramUser;
+import com.example.telegram_bot.service.HabrRequest;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
@@ -15,20 +17,21 @@ import org.jsoup.nodes.Element;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class StartCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final TelegramUserService telegramUserService;
+    private final HabrRequest habrRequest;
     private final Long adminID = Long.valueOf(1395425257);
 
     public final static String START_MESSAGE = "Приветствую!\nЭто телеграм-бот для поиска работы!";
 
-    public StartCommand(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService) {
+    public StartCommand(SendBotMessageService sendBotMessageService,
+                        TelegramUserService telegramUserService,
+                        HabrRequest habrRequest) {
         this.sendBotMessageService = sendBotMessageService;
         this.telegramUserService = telegramUserService;
+        this.habrRequest = habrRequest;
     }
 
     @Override
@@ -128,38 +131,15 @@ public class StartCommand implements State {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        try {
-            // Получаем HTML страницу
-            Document doc = Jsoup.connect("https://career.habr.com/vacancies").get();
-
-            // Находим скрипты внутри HTML
-            Element scriptElement = doc.select("script[data-ssr-state=true]").first();
-
-            // Извлекаем содержимое скрипта
-            String script = scriptElement.html();
-            System.out.println(script);
-
-            // Ищем конкретные JSON объекты в скрипте
-            JSONObject jsonObject = new JSONObject(script);
-            JSONArray jsonArray = jsonObject.getJSONObject("search").getJSONArray("groups");
-
-            Gson gson = new Gson();
-            Specialization[] specialization = gson.fromJson(jsonArray.toString(), Specialization[].class);
-
-            for (Specialization sp : specialization)
-                System.out.println(sp.getId() + " " + sp.getTitle());
-//
-//            System.out.println(dataObject.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         execute(update, user);
     }
 
     @Override
     public void execute(Update update, User user) {
         telegramUserService.findByChatId(user.getChatId()).ifPresentOrElse(
-                Olduser -> {},
+                Olduser -> {
+                    user.setState(new NoCommand(sendBotMessageService));
+                    },
                 () -> {
                     TelegramUser newUser = new TelegramUser();
                     newUser.setChatId(user.getChatId());
@@ -167,9 +147,11 @@ public class StartCommand implements State {
                     newUser.setFirstName(update.getMessage().getFrom().getFirstName());
                     newUser.setLastName(update.getMessage().getFrom().getLastName());
                     telegramUserService.save(newUser);
+                    sendBotMessageService.sendMessage(user.getChatId(), "Для начала, мне нужно узнать твое местоположение");
+                    user.setState(new LocationCommand(sendBotMessageService, telegramUserService, habrRequest));
+                    user.getState().startState(update, user);
                 }
         );
-        user.setState(new NoCommand(sendBotMessageService));
     }
 
     @Override

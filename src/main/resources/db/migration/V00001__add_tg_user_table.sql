@@ -5,7 +5,7 @@ CREATE TABLE tg_user (chat_id INTEGER NOT NULL,
                       username VARCHAR NOT NULL,
                       firstname VARCHAR,
                       lastname VARCHAR,
-                      place_of_work INTEGER,
-                      experience INTEGER,
-                      town VARCHAR,
-                      education INTEGER);
+                      location VARCHAR,
+                      qualification INTEGER,
+                      specialization INTEGER[],
+                      skills INTEGER[]);
