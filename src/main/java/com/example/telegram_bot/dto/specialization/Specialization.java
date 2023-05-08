@@ -1,7 +1,6 @@
-package com.example.telegram_bot.dto;
+package com.example.telegram_bot.dto.specialization;
 
 import lombok.Data;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;

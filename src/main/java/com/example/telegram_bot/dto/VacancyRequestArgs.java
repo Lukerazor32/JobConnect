@@ -7,6 +7,9 @@ import lombok.Getter;
 @Getter
 public class VacancyRequestArgs {
     private String keyWords;
-    private String location;
+    private String[] locations;
     private int qualification;
+    private String sort;
+    private int[] specialization;
+    private int[] skills;
 }

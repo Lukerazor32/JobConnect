@@ -3,19 +3,10 @@ package com.example.telegram_bot.command;
 public enum CommandName {
 
     START("/start"),
-    BUTTONGETSONG("Песни под настроение"),
+    SETLOCATION("Изменить город"),
     GETSONG("/getsong"),
     HELP("/help"),
-    NO(""),
-
-    ADMINHELP("/adminhelp"),
-    STAT("/stat"),
-    ADDSONG("/addsong"),
-    DELETESONG("/dltsong"),
-    ADDFOLDER("/addfolder"),
-    DELETEFOLDER("/dltfolder"),
-    UPDATEFOLDER("/updfolder"),
-    EXIT("/exit");
+    NO("");
 
     private final String commandName;
 

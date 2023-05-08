@@ -15,8 +15,6 @@ public class AddFolderNameCommand implements State {
     private final MoodFolderService moodFolderService;
     private final JobConnect jobConnect;
 
-
-
     public AddFolderNameCommand(SendBotMessageService sendBotMessageService, MoodFolderService moodFolderService, JobConnect jobConnect) {
         this.sendBotMessageService = sendBotMessageService;
         this.moodFolderService = moodFolderService;

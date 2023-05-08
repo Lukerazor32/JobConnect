@@ -21,9 +21,10 @@ public class CommandContainerTest {
         TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
         MoodFolderService moodFolderService = Mockito.mock(MoodFolderService.class);
         TelegramMusicService telegramMusicService = Mockito.mock(TelegramMusicService.class);
+        HabrRequest habrRequest = Mockito.mock(HabrRequest.class);
         JobConnect jobConnect = Mockito.mock(JobConnect.class);
         user = Mockito.mock(User.class);
-        commandContainer = new CommandContainer(sendBotMessageService, telegramUserService, jobConnect, moodFolderService, telegramMusicService);
+        commandContainer = new CommandContainer(sendBotMessageService, telegramUserService, jobConnect, moodFolderService, telegramMusicService, habrRequest);
     }
 
     @Test

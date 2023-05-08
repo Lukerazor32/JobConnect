@@ -1,4 +1,4 @@
-package com.example.telegram_bot.dto;
+package com.example.telegram_bot.dto.vacancy;
 
 import lombok.Data;
 

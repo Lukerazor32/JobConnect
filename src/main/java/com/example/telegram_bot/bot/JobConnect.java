@@ -2,6 +2,7 @@ package com.example.telegram_bot.bot;
 
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.command.CommandContainer;
+import com.example.telegram_bot.command.CommandName;
 import com.example.telegram_bot.command.NoCommand;
 import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.service.impl.SendBotMessageServiceImpl;
@@ -15,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static com.example.telegram_bot.command.CommandName.BUTTONGETSONG;
-import static com.example.telegram_bot.command.CommandName.GETSONG;
 
 @Component
 public class JobConnect extends TelegramLongPollingBot {
@@ -36,13 +34,17 @@ public class JobConnect extends TelegramLongPollingBot {
 
     private Long chatId;
 
-    public JobConnect(TelegramUserService telegramUserService, MoodFolderService moodFolderService, TelegramMusicService telegramMusicService) {
+    public JobConnect(TelegramUserService telegramUserService,
+                      MoodFolderService moodFolderService,
+                      TelegramMusicService telegramMusicService,
+                      HabrRequest habrRequest) {
         sendBotMessageService = new SendBotMessageServiceImpl(this);
         this.commandContainer = new CommandContainer(sendBotMessageService,
                 telegramUserService,
                 this,
                 moodFolderService,
-                telegramMusicService);
+                telegramMusicService,
+                habrRequest);
         executor = Executors.newFixedThreadPool(100);
         activeUsers = new ArrayList<>();
         Unirest.config()
@@ -90,20 +92,13 @@ public class JobConnect extends TelegramLongPollingBot {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 String message = update.getMessage().getText().trim();
 
-                if (message.startsWith(COMMAND_PREFIX) || message.equals(BUTTONGETSONG.getCommandName())) {
-                    String commandIdentifier;
-
-                    if (message.equals(BUTTONGETSONG.getCommandName())) {
-                        commandIdentifier = GETSONG.getCommandName();
+                for (CommandName value : CommandName.values()) {
+                    if (value.getCommandName().equals(message)) {
+                        user.getState().undo();
+                        user.setState(commandContainer.retrieveCommand(value.getCommandName(), user));
+                        user.getState().startState(update, user);
+                        return;
                     }
-                    else {
-                        commandIdentifier = message.split(" ")[0].toLowerCase();
-                    }
-
-                    user.getState().undo();
-                    user.setState(commandContainer.retrieveCommand(commandIdentifier, user));
-                    user.getState().startState(update, user);
-                    return;
                 }
             }
 
