@@ -28,13 +28,14 @@ public class CommandContainer {
                             JobConnect jobConnect,
                             MoodFolderService moodFolderService,
                             TelegramMusicService telegramMusicService,
-                            HabrRequest habrRequest) {
+                            HabrRequest habrRequest,
+                            SuperJobAuth superJobAuth,
+                            SuperJobUserService service) {
         commandMap = ImmutableMap.<String, State>builder()
-                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService, habrRequest))
+                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService, superJobAuth, service))
                 .put(GETSONG.getCommandName(), new GetMoodCommand(sendBotMessageService, moodFolderService, telegramMusicService, jobConnect))
                 .put(HELP.getCommandName(), new HelpCommand(sendBotMessageService, jobConnect))
                 .put(NO.getCommandName(), new NoCommand(sendBotMessageService))
-                .put(SETLOCATION.getCommandName(), new LocationCommand(sendBotMessageService, telegramUserService, habrRequest))
                 .build();
 
         unknownCommand = new UnknownCommand(sendBotMessageService, jobConnect);

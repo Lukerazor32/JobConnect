@@ -30,7 +30,7 @@ public class NoCommand implements State {
 
     @Override
     public void execute(Update update, User user) {
-        sendBotMessageService.sendMessage(update.getMessage().getChatId(), NO_MESSAGE);
+        sendBotMessageService.sendMessage(user.getChatId(), NO_MESSAGE);
     }
 
     @Override

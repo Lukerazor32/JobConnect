@@ -24,8 +24,8 @@ import java.util.List;
 
 @Component
 public class HabrRequestImpl implements HabrRequest {
-    private String habrAPIPath;
-    private String habrPath;
+    private final String habrAPIPath;
+    private final String habrPath;
 
     public HabrRequestImpl(@Value("${habr.api.path}") String habrAPIPath,
                            @Value("${habr.path}") String habrPath) {
