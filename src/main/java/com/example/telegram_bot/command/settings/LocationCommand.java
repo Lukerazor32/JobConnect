@@ -72,14 +72,7 @@ public class LocationCommand implements State {
 
             telegramUserService.findByChatId(user.getChatId()).ifPresent(
                     telegramUser -> {
-                        if(telegramUser.getLocation() == null) {
-                            user.setState(new SpecializationCommand(sendBotMessageService, telegramUserService, habrRequest));
-                        } else {
-                            user.setState(new NoCommand(sendBotMessageService));
-                        }
-                        telegramUser.setLocation(locationId);
-                        telegramUserService.save(telegramUser);
-                        sendBotMessageService.sendMessage(user.getChatId(), "Город успешно выбран!");
+
                     }
             );
         }

@@ -22,6 +22,6 @@ class StartCommandTest extends AbstractCommandTest {
 
     @Override
     State getCommand() {
-        return new StartCommand(sendBotMessageService, telegramUserService, habrRequest);
+        return new StartCommand(sendBotMessageService, telegramUserService, superJobAuth, superJobUserService);
     }
 }

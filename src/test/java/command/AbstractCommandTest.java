@@ -2,11 +2,11 @@ package command;
 
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.bot.JobConnect;
-import com.example.telegram_bot.service.HabrRequest;
-import com.example.telegram_bot.service.SendBotMessageService;
+import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.service.impl.HabrRequestImpl;
 import com.example.telegram_bot.service.impl.SendBotMessageServiceImpl;
-import com.example.telegram_bot.service.TelegramUserService;
+import com.example.telegram_bot.service.impl.SuperJobAuthImpl;
+import com.example.telegram_bot.service.impl.SuperJobUserServiceImpl;
 import com.example.telegram_bot.state.State;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,6 +20,8 @@ abstract class AbstractCommandTest {
     protected TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
     protected SendBotMessageService sendBotMessageService = new SendBotMessageServiceImpl(jobConnect);
     protected HabrRequest habrRequest = new HabrRequestImpl("", "");
+    protected SuperJobAuth superJobAuth = new SuperJobAuthImpl("", "", "", "");
+    protected SuperJobUserService superJobUserService = new SuperJobUserServiceImpl("", "", "");
 
     abstract String getCommandName();
 

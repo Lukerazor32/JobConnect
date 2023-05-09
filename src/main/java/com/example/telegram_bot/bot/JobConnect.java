@@ -37,14 +37,18 @@ public class JobConnect extends TelegramLongPollingBot {
     public JobConnect(TelegramUserService telegramUserService,
                       MoodFolderService moodFolderService,
                       TelegramMusicService telegramMusicService,
-                      HabrRequest habrRequest) {
+                      HabrRequest habrRequest,
+                      SuperJobAuth superJobAuth,
+                      SuperJobUserService service) {
         sendBotMessageService = new SendBotMessageServiceImpl(this);
         this.commandContainer = new CommandContainer(sendBotMessageService,
                 telegramUserService,
                 this,
                 moodFolderService,
                 telegramMusicService,
-                habrRequest);
+                habrRequest,
+                superJobAuth,
+                service);
         executor = Executors.newFixedThreadPool(100);
         activeUsers = new ArrayList<>();
         Unirest.config()

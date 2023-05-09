@@ -1,37 +1,36 @@
 package com.example.telegram_bot.command;
 
 import com.example.telegram_bot.Entity.User;
-import com.example.telegram_bot.command.settings.LocationCommand;
-import com.example.telegram_bot.dto.specialization.Specialization;
+import com.example.telegram_bot.dto.superjob.resume.ResumeData;
 import com.example.telegram_bot.repository.entity.TelegramUser;
-import com.example.telegram_bot.service.HabrRequest;
-import com.example.telegram_bot.service.SendBotMessageService;
-import com.example.telegram_bot.service.TelegramUserService;
+import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.state.State;
-import com.google.gson.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import kong.unirest.HttpResponse;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StartCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final TelegramUserService telegramUserService;
-    private final HabrRequest habrRequest;
-    private final Long adminID = Long.valueOf(1395425257);
+    private final SuperJobAuth superJobAuth;
+    private final SuperJobUserService service;
 
-    public final static String START_MESSAGE = "Приветствую!\nЭто телеграм-бот для поиска работы!";
+    private boolean isAuth = false;
+
+    public final static String START_MESSAGE = "Приветствую!\nЭто телеграм-бот для поиска работы! Для начала пройди авторизацию: \n%s";
 
     public StartCommand(SendBotMessageService sendBotMessageService,
                         TelegramUserService telegramUserService,
-                        HabrRequest habrRequest) {
+                        SuperJobAuth superJobAuth,
+                        SuperJobUserService service) {
         this.sendBotMessageService = sendBotMessageService;
         this.telegramUserService = telegramUserService;
-        this.habrRequest = habrRequest;
+        this.superJobAuth = superJobAuth;
+        this.service = service;
     }
 
     @Override
@@ -90,8 +89,8 @@ public class StartCommand implements State {
 //        JsonNode jsonNode1 = jsonResponse1.getBody();
 //        JSONArray jsonArray = jsonNode1.getObject().getJSONArray("list");
 ////        Gson gson = new Gson();
-////        Vacancy[] vacancies = gson.fromJson(jsonArray.toString(), Vacancy[].class);
-////        for (Vacancy obj : vacancies) {
+////        JobListing[] vacancies = gson.fromJson(jsonArray.toString(), JobListing[].class);
+////        for (JobListing obj : vacancies) {
 ////            System.out.println(obj.getHref());
 ////        }
 //        System.out.println(jsonNode1 + " \n" + jsonArray);
@@ -106,7 +105,7 @@ public class StartCommand implements State {
 //                })
 //                .getBody();
 //        String url = jsonResponse2.getList().get(0).getHref();
-//        for (Vacancy vacancy : jsonResponse2.getList()) {
+//        for (JobListing vacancy : jsonResponse2.getList()) {
 //            System.out.println(vacancy.getId() + " " + vacancy.getHref() + " " + vacancy.getTitle());
 //        }
 //
@@ -131,25 +130,73 @@ public class StartCommand implements State {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        execute(update, user);
+//        JobListing jobListing = Unirest.get("https://api.superjob.ru/2.0/vacancies/")
+//                .header("X-Api-App-Id", "v3.r.137533868.0c505521a6bdae5fb42658f110bba226456273aa.13e634d8d3301ee3d4d2b40b40c914cf58d29237")
+//                .asObject(new GenericType<JobListing>() {
+//                })
+//                .getBody();
+        telegramUserService.findByChatId(user.getChatId()).ifPresent(
+            telegramUser -> {
+                HttpResponse<ResumeData> resumeData = service.getResumes(telegramUser.getAccessToken());
+                System.out.println("Успешно!\n" + resumeData.getStatus() + "\n" + resumeData.getBody().getObjects()[0].toString());
+            }
+        );
+
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            telegramUserService.findByChatId(user.getChatId()).ifPresent(
+                    oldUser -> {
+                        if(oldUser.getAccessToken() != null && oldUser.getRefreshToken() != null) {
+                            isAuth = true;
+                        }
+                    }
+            );
+            if (!isAuth) {
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowCheck = new ArrayList<>();
+                InlineKeyboardButton checkutton = new InlineKeyboardButton();
+                checkutton.setText("Проверить авторизацию");
+                checkutton.setCallbackData("checkAuth");
+                rowCheck.add(checkutton);
+                rowsInline.add(rowCheck);
+                markupInline.setKeyboard(rowsInline);
+
+                sendBotMessageService.setReplyMarkup(markupInline);
+                sendBotMessageService.sendMessage(user.getChatId(), String.format(START_MESSAGE, superJobAuth.getAuthURL(user.getChatId().toString())));
+            }
+        } else if (update.hasCallbackQuery() || isAuth) {
+            execute(update, user);
+        }
     }
 
     @Override
     public void execute(Update update, User user) {
         telegramUserService.findByChatId(user.getChatId()).ifPresentOrElse(
-                Olduser -> {
-                    user.setState(new NoCommand(sendBotMessageService));
-                    },
+                oldUser -> {
+                    if (update.hasCallbackQuery() && oldUser.getAccessToken() == null) {
+                        String accessToken;
+                        try {
+                            accessToken = superJobAuth.getTokens().get(oldUser.getChatId())[0];
+                        } catch (NullPointerException e) {
+                            return;
+                        }
+                        String refreshToken = superJobAuth.getTokens().get(oldUser.getChatId())[1];
+                        oldUser.setAccessToken(accessToken);
+                        oldUser.setRefreshToken(refreshToken);
+                        telegramUserService.save(oldUser);
+                        sendBotMessageService.sendMessage(user.getChatId(), "Авторизация прошла успешно");
+                        user.setState(new NoCommand(sendBotMessageService));
+                    } else {
+                        user.setState(new NoCommand(sendBotMessageService));
+                    }
+                },
                 () -> {
                     TelegramUser newUser = new TelegramUser();
-                    newUser.setChatId(user.getChatId());
                     newUser.setUsername(update.getMessage().getFrom().getUserName());
+                    newUser.setChatId(user.getChatId());
                     newUser.setFirstName(update.getMessage().getFrom().getFirstName());
                     newUser.setLastName(update.getMessage().getFrom().getLastName());
                     telegramUserService.save(newUser);
-                    sendBotMessageService.sendMessage(user.getChatId(), "Для начала, мне нужно узнать твое местоположение");
-                    user.setState(new LocationCommand(sendBotMessageService, telegramUserService, habrRequest));
-                    user.getState().startState(update, user);
                 }
         );
     }
@@ -158,5 +205,4 @@ public class StartCommand implements State {
     public void undo() {
 
     }
-
 }
