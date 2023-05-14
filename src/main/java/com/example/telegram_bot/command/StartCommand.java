@@ -17,7 +17,6 @@ public class StartCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final TelegramUserService telegramUserService;
     private final SuperJobAuth superJobAuth;
-    private final SuperJobUserService service;
 
     private boolean isAuth = false;
 
@@ -25,12 +24,10 @@ public class StartCommand implements State {
 
     public StartCommand(SendBotMessageService sendBotMessageService,
                         TelegramUserService telegramUserService,
-                        SuperJobAuth superJobAuth,
-                        SuperJobUserService service) {
+                        SuperJobAuth superJobAuth) {
         this.sendBotMessageService = sendBotMessageService;
         this.telegramUserService = telegramUserService;
         this.superJobAuth = superJobAuth;
-        this.service = service;
     }
 
     @Override
@@ -135,13 +132,6 @@ public class StartCommand implements State {
 //                .asObject(new GenericType<JobListing>() {
 //                })
 //                .getBody();
-        telegramUserService.findByChatId(user.getChatId()).ifPresent(
-            telegramUser -> {
-                HttpResponse<ResumeData> resumeData = service.getResumes(telegramUser.getAccessToken());
-                System.out.println("Успешно!\n" + resumeData.getStatus() + "\n" + resumeData.getBody().getObjects()[0].toString());
-            }
-        );
-
         if (update.hasMessage() && update.getMessage().hasText()) {
             telegramUserService.findByChatId(user.getChatId()).ifPresent(
                     oldUser -> {
@@ -153,12 +143,7 @@ public class StartCommand implements State {
             if (!isAuth) {
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowCheck = new ArrayList<>();
-                InlineKeyboardButton checkutton = new InlineKeyboardButton();
-                checkutton.setText("Проверить авторизацию");
-                checkutton.setCallbackData("checkAuth");
-                rowCheck.add(checkutton);
-                rowsInline.add(rowCheck);
+                rowsInline.add(sendBotMessageService.createRow("Проверить авторизацию", "checkAuth"));
                 markupInline.setKeyboard(rowsInline);
 
                 sendBotMessageService.setReplyMarkup(markupInline);
@@ -181,6 +166,8 @@ public class StartCommand implements State {
                             return;
                         }
                         String refreshToken = superJobAuth.getTokens().get(oldUser.getChatId())[1];
+
+                        user.setToken(accessToken);
                         oldUser.setAccessToken(accessToken);
                         oldUser.setRefreshToken(refreshToken);
                         telegramUserService.save(oldUser);

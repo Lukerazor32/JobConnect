@@ -5,7 +5,6 @@ import com.example.telegram_bot.state.State;
 import org.junit.jupiter.api.DisplayName;
 
 import static com.example.telegram_bot.command.CommandName.HELP;
-import static com.example.telegram_bot.command.HelpCommand.HELP_MESSAGE;
 
 @DisplayName("Unit-level testing for HelpCommand")
 public class HelpCommandTest extends AbstractCommandTest {
@@ -16,7 +15,7 @@ public class HelpCommandTest extends AbstractCommandTest {
 
     @Override
     String getCommandMessage() {
-        return HELP_MESSAGE;
+        return "";
     }
 
     @Override

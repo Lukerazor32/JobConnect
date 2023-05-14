@@ -3,7 +3,9 @@ package com.example.telegram_bot.command;
 public enum CommandName {
 
     START("/start"),
-    GETSONG("/getsong"),
+    RESUME("/resume"),
+    VACANCIES("/vacancies"),
+    SUBSCRIPT("/subscript"),
     HELP("/help"),
     NO("");
 

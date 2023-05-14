@@ -6,11 +6,8 @@ import lombok.Data;
 
 @Data
 public class User {
-
     private Long chatId;
-
     private State state;
-
     private State oldState;
-
+    private String token;
 }

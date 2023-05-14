@@ -3,7 +3,6 @@ package command;
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.service.*;
-import com.example.telegram_bot.service.impl.HabrRequestImpl;
 import com.example.telegram_bot.service.impl.SendBotMessageServiceImpl;
 import com.example.telegram_bot.service.impl.SuperJobAuthImpl;
 import com.example.telegram_bot.service.impl.SuperJobUserServiceImpl;
@@ -19,9 +18,8 @@ abstract class AbstractCommandTest {
     protected JobConnect jobConnect = Mockito.mock(JobConnect.class);
     protected TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
     protected SendBotMessageService sendBotMessageService = new SendBotMessageServiceImpl(jobConnect);
-    protected HabrRequest habrRequest = new HabrRequestImpl("", "");
     protected SuperJobAuth superJobAuth = new SuperJobAuthImpl("", "", "", "");
-    protected SuperJobUserService superJobUserService = new SuperJobUserServiceImpl("", "", "");
+    protected SuperJobUserService superJobUserService = new SuperJobUserServiceImpl("", "");
 
     abstract String getCommandName();
 
