@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResumeData {
-    private ResumeObject[] objects;
+    private Resume[] objects;
     private boolean more;
     private int total;
 }

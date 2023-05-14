@@ -19,21 +19,19 @@ public class CommandContainerTest {
     public void init() {
         SendBotMessageService sendBotMessageService = Mockito.mock(SendBotMessageService.class);
         TelegramUserService telegramUserService = Mockito.mock(TelegramUserService.class);
-        MoodFolderService moodFolderService = Mockito.mock(MoodFolderService.class);
-        TelegramMusicService telegramMusicService = Mockito.mock(TelegramMusicService.class);
-        HabrRequest habrRequest = Mockito.mock(HabrRequest.class);
         SuperJobAuth superJobAuth = Mockito.mock(SuperJobAuth.class);
         SuperJobUserService superJobUserService = Mockito.mock(SuperJobUserService.class);
+        ResumeService resumeService = Mockito.mock(ResumeService.class);
+        VacancyService vacancyService = Mockito.mock(VacancyService.class);
         JobConnect jobConnect = Mockito.mock(JobConnect.class);
         user = Mockito.mock(User.class);
         commandContainer = new CommandContainer(sendBotMessageService,
                 telegramUserService,
                 jobConnect,
-                moodFolderService,
-                telegramMusicService,
-                habrRequest,
                 superJobAuth,
-                superJobUserService);
+                superJobUserService,
+                resumeService,
+                vacancyService);
     }
 
     @Test

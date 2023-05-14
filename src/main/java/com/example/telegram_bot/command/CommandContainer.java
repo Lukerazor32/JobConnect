@@ -2,14 +2,7 @@ package com.example.telegram_bot.command;
 
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.bot.JobConnect;
-import com.example.telegram_bot.command.admin.addfolder.AddFolderNameCommand;
-import com.example.telegram_bot.command.admin.addsong.AddSongCommand;
-import com.example.telegram_bot.command.admin.deletefolder.DeleteFolderCommand;
-import com.example.telegram_bot.command.admin.deletesong.DeleteSongCommand;
-import com.example.telegram_bot.command.admin.help.AdminHelpCommand;
-import com.example.telegram_bot.command.admin.updatefolder.ChooseFolderCommand;
-import com.example.telegram_bot.command.getsong.GetMoodCommand;
-import com.example.telegram_bot.command.settings.LocationCommand;
+import com.example.telegram_bot.command.subscript.ChooseTownCommand;
 import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.state.State;
 import com.google.common.collect.ImmutableMap;
@@ -26,16 +19,17 @@ public class CommandContainer {
     public CommandContainer(SendBotMessageService sendBotMessageService,
                             TelegramUserService telegramUserService,
                             JobConnect jobConnect,
-                            MoodFolderService moodFolderService,
-                            TelegramMusicService telegramMusicService,
-                            HabrRequest habrRequest,
                             SuperJobAuth superJobAuth,
-                            SuperJobUserService service) {
+                            SuperJobUserService spUserService,
+                            ResumeService resumeService,
+                            VacancyService vacancyService) {
         commandMap = ImmutableMap.<String, State>builder()
-                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService, superJobAuth, service))
-                .put(GETSONG.getCommandName(), new GetMoodCommand(sendBotMessageService, moodFolderService, telegramMusicService, jobConnect))
+                .put(START.getCommandName(), new StartCommand(sendBotMessageService, telegramUserService, superJobAuth))
                 .put(HELP.getCommandName(), new HelpCommand(sendBotMessageService, jobConnect))
                 .put(NO.getCommandName(), new NoCommand(sendBotMessageService))
+                .put(RESUME.getCommandName(), new EditResumeCommand(sendBotMessageService, telegramUserService, resumeService))
+                .put(VACANCIES.getCommandName(), new VacancyCommand(sendBotMessageService, telegramUserService, resumeService, vacancyService))
+                .put(SUBSCRIPT.getCommandName(), new ChooseTownCommand(sendBotMessageService, spUserService))
                 .build();
 
         unknownCommand = new UnknownCommand(sendBotMessageService, jobConnect);

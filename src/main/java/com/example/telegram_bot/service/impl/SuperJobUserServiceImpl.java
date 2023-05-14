@@ -1,41 +1,73 @@
 package com.example.telegram_bot.service.impl;
 
-import com.example.telegram_bot.dto.superjob.resume.ResumeData;
+import com.example.telegram_bot.dto.superjob.*;
 import com.example.telegram_bot.service.SuperJobUserService;
-import kong.unirest.HttpResponse;
+import kong.unirest.GenericType;
 import kong.unirest.Unirest;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class SuperJobUserServiceImpl implements SuperJobUserService {
     private final String superJobAPIPath;
-
     private final String secretKey;
-    private final String client_id;
-
-    private Map<String, String> headerProp;
 
     public SuperJobUserServiceImpl(@Value("${superjob.api.path}") String superJobAPIPath,
-                            @Value("${superjob.api.secret-key}") String secretKey,
-                            @Value("${superjob.api.id}") String client_id) {
+                            @Value("${superjob.api.secret-key}") String secretKey) {
         this.superJobAPIPath = superJobAPIPath;
         this.secretKey = secretKey;
-        this.client_id = client_id;
+    }
 
-        headerProp = new HashMap<>();
+    @Override
+    public boolean createSubscriptVacancy(String authToken, SubscriptionArgs args) {
+        Map<String, String> headerProp = new HashMap<>();
         headerProp.put("Host", "api.superjob.ru");
         headerProp.put("X-Api-App-Id", secretKey);
-    }
-    @Override
-    public HttpResponse<ResumeData> getResumes(String authToken) {
-        System.out.println(String.format("Bearer %s", authToken));
         headerProp.put("Authorization", String.format("Bearer %s", authToken));
-        return Unirest.get(String.format("%s/user_cvs/", superJobAPIPath))
+        JSONObject jsonResponse = Unirest.post(String.format("%s/subscriptions/", superJobAPIPath))
                 .headers(headerProp)
-                .asObject(ResumeData.class);
+                .queryString(args.populateQueries())
+                .asObject(JSONObject.class)
+                .getBody();
+        if (jsonResponse.has("id")) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public TownObject getTowns() {
+        return Unirest.post(String.format("%s/towns/", superJobAPIPath))
+                .asObject(TownObject.class)
+                .getBody();
+    }
+
+    @Override
+    public TownObject getTowns(String townTitle) {
+        return Unirest.post(String.format("%s/towns/", superJobAPIPath))
+                .queryString("keyword", townTitle)
+                .asObject(TownObject.class)
+                .getBody();
+    }
+
+    @Override
+    public List<Catalogues> getCategories() {
+        return Unirest.post(String.format("%s/catalogues/", superJobAPIPath))
+                .asObject(new GenericType<List<Catalogues>>() {
+                })
+                .getBody();
+    }
+
+    @Override
+    public List<Positions> getPositions(int categoryId) {
+        return Unirest.post(String.format("%s/catalogues/parent/%s/", superJobAPIPath, categoryId))
+                .asObject(new GenericType<List<Positions>>() {
+                })
+                .getBody();
     }
 }
