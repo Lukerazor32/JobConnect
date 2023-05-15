@@ -29,4 +29,13 @@ public class TelegramUser {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
+    @Column(name = "resume_subscription_id")
+    private Integer resumeSubscriptionId;
+
+    @Column(name = "last_date_vacancy")
+    private Long lastDateVacancy;
+
+    @Column(name = "is_subscript")
+    private Boolean isSubscript;
 }

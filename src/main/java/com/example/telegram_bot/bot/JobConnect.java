@@ -95,10 +95,14 @@ public class JobConnect extends TelegramLongPollingBot {
                 user.setOldState(user.getState());
                 user.setChatId(chatId);
 
-                TelegramUser telegramUser = telegramUserService.findByChatId(chatId).get();
-                if (telegramUser != null) {
-                    user.setToken(telegramUser.getAccessToken());
-                }
+                User finalUser = user;
+                telegramUserService.findByChatId(chatId).ifPresent(
+                        telegramUser -> {
+                            finalUser.setToken(telegramUser.getAccessToken());
+                        }
+                );
+
+                user = finalUser;
                 activeUsers.add(user);
             }
 

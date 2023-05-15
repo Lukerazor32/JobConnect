@@ -159,30 +159,25 @@ public class StartCommand implements State {
         telegramUserService.findByChatId(user.getChatId()).ifPresentOrElse(
                 oldUser -> {
                     if (update.hasCallbackQuery() && oldUser.getAccessToken() == null) {
-                        String accessToken;
-                        try {
-                            accessToken = superJobAuth.getTokens().get(oldUser.getChatId())[0];
-                        } catch (NullPointerException e) {
-                            return;
-                        }
-                        String refreshToken = superJobAuth.getTokens().get(oldUser.getChatId())[1];
-
-                        user.setToken(accessToken);
-                        oldUser.setAccessToken(accessToken);
-                        oldUser.setRefreshToken(refreshToken);
-                        telegramUserService.save(oldUser);
-                        sendBotMessageService.sendMessage(user.getChatId(), "Авторизация прошла успешно");
-                        user.setState(new NoCommand(sendBotMessageService));
+                        setAuth(oldUser, user);
                     } else {
                         user.setState(new NoCommand(sendBotMessageService));
                     }
                 },
                 () -> {
                     TelegramUser newUser = new TelegramUser();
-                    newUser.setUsername(update.getMessage().getFrom().getUserName());
+                    if (update.hasMessage()) {
+                        newUser.setUsername(update.getMessage().getFrom().getUserName());
+                        newUser.setFirstName(update.getMessage().getFrom().getFirstName());
+                        newUser.setLastName(update.getMessage().getFrom().getLastName());
+                    } else {
+                        newUser.setUsername(update.getCallbackQuery().getFrom().getUserName());
+                        newUser.setFirstName(update.getCallbackQuery().getFrom().getFirstName());
+                        newUser.setLastName(update.getCallbackQuery().getFrom().getLastName());
+                    }
                     newUser.setChatId(user.getChatId());
-                    newUser.setFirstName(update.getMessage().getFrom().getFirstName());
-                    newUser.setLastName(update.getMessage().getFrom().getLastName());
+                    newUser.setIsSubscript(false);
+                    setAuth(newUser, user);
                     telegramUserService.save(newUser);
                 }
         );
@@ -191,5 +186,23 @@ public class StartCommand implements State {
     @Override
     public void undo() {
 
+    }
+
+    private boolean setAuth(TelegramUser telegramUser, User user) {
+        String accessToken;
+        try {
+            accessToken = superJobAuth.getTokens().get(telegramUser.getChatId())[0];
+        } catch (NullPointerException e) {
+            return false;
+        }
+        String refreshToken = superJobAuth.getTokens().get(telegramUser.getChatId())[1];
+
+        user.setToken(accessToken);
+        telegramUser.setAccessToken(accessToken);
+        telegramUser.setRefreshToken(refreshToken);
+        telegramUserService.save(telegramUser);
+        sendBotMessageService.sendMessage(user.getChatId(), "Авторизация прошла успешно");
+        user.setState(new NoCommand(sendBotMessageService));
+        return true;
     }
 }

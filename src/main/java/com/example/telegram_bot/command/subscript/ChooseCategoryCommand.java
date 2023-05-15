@@ -2,11 +2,10 @@ package com.example.telegram_bot.command.subscript;
 
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.dto.superjob.Catalogues;
-import com.example.telegram_bot.dto.superjob.Positions;
 import com.example.telegram_bot.dto.superjob.SubscriptionArgs;
-import com.example.telegram_bot.dto.superjob.Town;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.SuperJobUserService;
+import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -20,33 +19,33 @@ import java.util.List;
 public class ChooseCategoryCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final SuperJobUserService superJobUserService;
-    private SubscriptionArgs.SubscriptionArgsBuilder subscriptionArgs;
+    private final TelegramUserService telegramUserService;
+    private SubscriptionArgs.SubscriptionArgsBuilder subscriptionArgsBuilder;
 
     private Message message;
     private EditMessageText editMessageText;
-    private int startIndex;
-    private int endIndex;
     private int page;
 
     private List<Catalogues> catalogues;
-    private List<Catalogues> selectedCatalogues;
+    private List<Integer> selectedCatalogues;
+
+    private Long chatId;
 
     private final static String CATEGORYTEXT = "Теперь выберите категорию работы";
 
-    public ChooseCategoryCommand(SendBotMessageService sendBotMessageService, SuperJobUserService superJobUserService, SubscriptionArgs.SubscriptionArgsBuilder subscriptionArgs) {
+    public ChooseCategoryCommand(SendBotMessageService sendBotMessageService, SuperJobUserService superJobUserService, TelegramUserService telegramUserService, SubscriptionArgs.SubscriptionArgsBuilder subscriptionArgs) {
         this.sendBotMessageService = sendBotMessageService;
         this.superJobUserService = superJobUserService;
-        this.subscriptionArgs = subscriptionArgs;
+        this.telegramUserService = telegramUserService;
+        this.subscriptionArgsBuilder = subscriptionArgs;
         editMessageText = new EditMessageText();
         selectedCatalogues = new ArrayList<>();
-        startIndex = 0;
-        endIndex = 5;
         page = 1;
     }
 
     @Override
     public void startState(Update update, User user) {
-        editMessageText.setChatId(String.valueOf(user.getChatId()));
+        chatId = user.getChatId();
         catalogues = superJobUserService.getCategories();
         setMarkup(catalogues, page);
         message = sendBotMessageService.sendMessage(user.getChatId(), CATEGORYTEXT);
@@ -59,23 +58,23 @@ public class ChooseCategoryCommand implements State {
 
             if (data.contains("catalogueId")) {
                 int catalogueIndex = Integer.parseInt(data.split(" ")[1]);
-                selectedCatalogues.add(catalogues.get(catalogueIndex));
+                selectedCatalogues.add(catalogues.get(catalogueIndex).getKey());
             } else if (data.contains("deleteCatalogue")) {
                 int catalogueIndex = Integer.parseInt(data.split(" ")[1]);
                 selectedCatalogues.remove(catalogues.get(catalogueIndex));
-            } else if (data.contains("plus") && page+1 <= 3) {
+            } else if (data.contains("plus")) {
                 page++;
             } else if (data.contains("minus") && page-1 > 0) {
                 page--;
             } else if (data.contains("acceptCatalogue")) {
                 if (selectedCatalogues.size() > 0) {
-                    subscriptionArgs.catalogues(selectedCatalogues);
+                    SubscriptionArgs subscriptionArgs = subscriptionArgsBuilder.catalogues(selectedCatalogues).build();
                     sendBotMessageService.sendMessage(user.getChatId(), "Категория выбрана!");
+//                    user.setState(new SubscriptVacancyCommand(sendBotMessageService, superJobUserService, telegramUserService, subscriptionArgs));
                     return;
                 } else {
                     sendBotMessageService.sendMessage(user.getChatId(), "Выберите категорию");
                 }
-
             }
             setMarkup(catalogues, page);
         }
@@ -96,7 +95,7 @@ public class ChooseCategoryCommand implements State {
         List<Catalogues> cataloguePage = catalogues.subList(startIndex, endIndex);
         for (Catalogues catalogue : cataloguePage) {
             String catalogueTitle = catalogue.getTitle();
-            if (selectedCatalogues.size() > 0 && selectedCatalogues.contains(catalogue)) {
+            if (selectedCatalogues.size() > 0 && selectedCatalogues.contains(catalogue.getKey())) {
                 catalogueTitle += " ✅";
                 rowsInline.add(sendBotMessageService.createRow(catalogueTitle, "deleteCatalogue " + catalogueId));
             } else {
@@ -118,6 +117,7 @@ public class ChooseCategoryCommand implements State {
         rowsInline.add(sendBotMessageService.createRow("Отправить", "acceptCatalogue"));
         markupInline.setKeyboard(rowsInline);
         if (message != null) {
+            editMessageText.setChatId(String.valueOf(chatId));
             editMessageText.setReplyMarkup(markupInline);
             editMessageText.setText(CATEGORYTEXT);
             editMessageText.setMessageId(message.getMessageId());

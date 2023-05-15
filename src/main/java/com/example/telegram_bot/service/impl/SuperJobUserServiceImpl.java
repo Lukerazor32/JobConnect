@@ -2,9 +2,9 @@ package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.dto.superjob.*;
 import com.example.telegram_bot.service.SuperJobUserService;
+import com.google.gson.JsonObject;
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +29,11 @@ public class SuperJobUserServiceImpl implements SuperJobUserService {
         headerProp.put("Host", "api.superjob.ru");
         headerProp.put("X-Api-App-Id", secretKey);
         headerProp.put("Authorization", String.format("Bearer %s", authToken));
-        JSONObject jsonResponse = Unirest.post(String.format("%s/subscriptions/", superJobAPIPath))
+        headerProp.put("Content-Type", "application/json");
+        JsonObject jsonResponse = Unirest.post(String.format("%s/subscriptions/", superJobAPIPath))
                 .headers(headerProp)
-                .queryString(args.populateQueries())
-                .asObject(JSONObject.class)
+                .body(args.populateQueries())
+                .asObject(JsonObject.class)
                 .getBody();
         if (jsonResponse.has("id")) {
             return true;

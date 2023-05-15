@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class Vacancy {
+public class Vacancy implements Comparable<Vacancy> {
     private boolean canEdit;
     private boolean is_closed;
     private int id;
@@ -86,5 +86,10 @@ public class Vacancy {
 
         String result = builder.toString();
         return result;
+    }
+
+    @Override
+    public int compareTo(Vacancy vacancy) {
+        return Integer.compare(vacancy.date_published, this.date_published);
     }
 }

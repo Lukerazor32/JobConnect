@@ -5,6 +5,7 @@ import com.example.telegram_bot.dto.superjob.SubscriptionArgs;
 import com.example.telegram_bot.dto.superjob.Town;
 import com.example.telegram_bot.service.SendBotMessageService;
 import com.example.telegram_bot.service.SuperJobUserService;
+import com.example.telegram_bot.service.TelegramUserService;
 import com.example.telegram_bot.state.State;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,15 +18,17 @@ import java.util.List;
 public class ChooseTownCommand implements State {
     private final SendBotMessageService sendBotMessageService;
     private final SuperJobUserService superJobUserService;
+    private final TelegramUserService telegramUserService;
     private SubscriptionArgs.SubscriptionArgsBuilder subscriptionArgs;
     private Message message;
 
     private List<Town> towns;
 
     private final static String CHOOSETOWN = "Для начала нужно выбрать город. Напиши название города или выбери из предложенных";
-    public ChooseTownCommand(SendBotMessageService sendBotMessageService, SuperJobUserService superJobUserService) {
+    public ChooseTownCommand(SendBotMessageService sendBotMessageService, SuperJobUserService superJobUserService, TelegramUserService telegramUserService) {
         this.sendBotMessageService = sendBotMessageService;
         this.superJobUserService = superJobUserService;
+        this.telegramUserService = telegramUserService;
     }
 
     @Override
@@ -50,9 +53,10 @@ public class ChooseTownCommand implements State {
         } else if (update.hasCallbackQuery()) {
             try {
                 int townId = Integer.parseInt(update.getCallbackQuery().getData());
-                subscriptionArgs = SubscriptionArgs.builder().town(townId);
+                int[] towns = {townId};
+                subscriptionArgs = SubscriptionArgs.builder().town(towns);
                 sendBotMessageService.sendMessage(user.getChatId(), "Город выбран!");
-                user.setState(new ChooseCategoryCommand(sendBotMessageService, superJobUserService, subscriptionArgs));
+                user.setState(new ChooseCategoryCommand(sendBotMessageService, superJobUserService, telegramUserService, subscriptionArgs));
             } catch (Exception e) {
                 e.getMessage();
             }

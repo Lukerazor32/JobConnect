@@ -7,7 +7,9 @@ import kong.unirest.HttpResponse;
 import java.util.List;
 
 public interface VacancyService {
-    VacancyObject getVacancies(String authToken, int idResume);
+    List<Vacancy> getVacancies(String authToken, int idResume, int page);
+
+    List<Vacancy> getVacanciesOrderByDate(String authToken, int idResume);
 
     boolean sendResponseToVacancy(String authToken, int idResume, int idVacancy);
 }
