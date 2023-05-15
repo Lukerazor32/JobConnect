@@ -3,6 +3,7 @@ package com.example.telegram_bot.command;
 import com.example.telegram_bot.Entity.User;
 import com.example.telegram_bot.bot.JobConnect;
 import com.example.telegram_bot.command.subscript.ChooseTownCommand;
+import com.example.telegram_bot.command.subscript.SelectResumeCommand;
 import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.state.State;
 import com.google.common.collect.ImmutableMap;
@@ -29,7 +30,7 @@ public class CommandContainer {
                 .put(NO.getCommandName(), new NoCommand(sendBotMessageService))
                 .put(RESUME.getCommandName(), new EditResumeCommand(sendBotMessageService, telegramUserService, resumeService))
                 .put(VACANCIES.getCommandName(), new VacancyCommand(sendBotMessageService, telegramUserService, resumeService, vacancyService))
-                .put(SUBSCRIPT.getCommandName(), new ChooseTownCommand(sendBotMessageService, spUserService))
+                .put(SUBSCRIPT.getCommandName(), new SelectResumeCommand(sendBotMessageService, telegramUserService, spUserService, resumeService))
                 .build();
 
         unknownCommand = new UnknownCommand(sendBotMessageService, jobConnect);

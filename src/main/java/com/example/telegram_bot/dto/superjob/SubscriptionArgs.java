@@ -13,21 +13,17 @@ import static java.util.Objects.nonNull;
 @Builder
 @Getter
 public class SubscriptionArgs {
-    private final int payment_from;
-    private final int payment_to;
-    private final int town;
-    private final List<Catalogues> catalogues;
+    private final int resumeId;
+    private final int[] town;
+    private final List<Integer> catalogues;
 
     public Map populateQueries() {
         Map queries = new HashMap<>();
-        if(nonNull(payment_from)) {
-            queries.put("payment_from", payment_from);
-        }
-        if(nonNull(payment_to)) {
-            queries.put("payment_to", payment_to);
+        if(nonNull(resumeId)) {
+            queries.put("id_resume", resumeId);
         }
         if(nonNull(town)) {
-            queries.put("town", town);
+            queries.put("t", town);
         }
         if(nonNull(catalogues)) {
             queries.put("catalogues", catalogues);

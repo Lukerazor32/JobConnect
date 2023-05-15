@@ -29,7 +29,8 @@ public class VacancyCommand implements State {
 
     private ResumeData resumeData;
     private Resume selectedResume;
-    private List<Vacancy> vacancy;
+    private List<Vacancy> vacancies;
+    private int page;
     private int indexVacancy;
 
     private Message message;
@@ -44,12 +45,13 @@ public class VacancyCommand implements State {
         this.telegramUserService = telegramUserService;
         this.resumeService = resumeService;
         this.vacancyService = vacancyService;
-        indexVacancy = 0;
     }
 
     @Override
     public void startState(Update update, User user) {
         if (!update.hasCallbackQuery()) {
+            indexVacancy = 0;
+            page = 1;
             resumeData = resumeService.getResumes(user.getToken());
             if (resumeData.getTotal() > 0) {
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -57,7 +59,7 @@ public class VacancyCommand implements State {
                 Resume[] resumes = resumeData.getObjects();
                 for (int i = 0; i < resumes.length; i++) {
                     Resume resume = resumes[i];
-                    String resumeTitle = resume.getId() + " " + resume.getProfession() + " " + String.format("(%s)", resume.getPublished().getTitle());
+                    String resumeTitle = " " + resume.getProfession() + " " + String.format("(%s)", resume.getPublished().getTitle());
                     rowsInline.add(sendBotMessageService.createRow(resumeTitle, "resumeId " + i));
                 }
                 markupInline.setKeyboard(rowsInline);
@@ -76,17 +78,15 @@ public class VacancyCommand implements State {
     public void execute(Update update, User user) {
         if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
-
             if (callbackData.contains("resumeId")) {
                 try {
                     int resumeId = Integer.parseInt(callbackData.split(" ")[1]);
                     selectedResume = resumeData.getObjects()[resumeId];
                     if (selectedResume.getPublished().getId() == 1) {
-                        VacancyObject vacancies = vacancyService.getVacancies(user.getToken(), selectedResume.getId());
-                        vacancy = vacancies.getObjects();
-                        if (vacancy != null && vacancy.size() > 1) {
+                        vacancies = vacancyService.getVacancies(user.getToken(), selectedResume.getId(), page);
+                        if (vacancies != null && vacancies.size() > 1) {
                             sendBotMessageService.setReplyMarkup(getResumeReplyMarkup(user.getToken()));
-                            message = sendBotMessageService.sendMessage(user.getChatId(), vacancy.get(indexVacancy).toString());
+                            message = sendBotMessageService.sendMessage(user.getChatId(), vacancies.get(indexVacancy).toString());
                         } else {
                             sendBotMessageService.sendMessage(user.getChatId(), "Вакансий не найдено");
                         }
@@ -94,22 +94,30 @@ public class VacancyCommand implements State {
                     }
                     sendBotMessageService.sendMessage(user.getChatId(), "Состояние резюме - " + selectedResume.getPublished().getTitle());
                     return;
-                } catch (Exception e) {}
+                } catch (Exception e) {return;}
             }
 
-            if (callbackData.equals("next") && indexVacancy+1 < vacancy.size()) {
+            if (callbackData.equals("next")) {
                 indexVacancy++;
+                if (indexVacancy >= vacancies.size()) {
+                    page++;
+                    vacancies.addAll(vacancyService.getVacancies(user.getToken(), selectedResume.getId(), page));
+                }
+                if (indexVacancy >= vacancies.size()) {
+                    page--;
+                    indexVacancy--;
+                }
             } else if (callbackData.equals("back") && indexVacancy-1 >= 0) {
                 indexVacancy--;
             } else if (callbackData.equals("vacancyResponseFalse")) {
-                vacancyService.sendResponseToVacancy(user.getToken(), selectedResume.getId(), vacancy.get(indexVacancy).getId());
+                vacancyService.sendResponseToVacancy(user.getToken(), selectedResume.getId(), vacancies.get(indexVacancy).getId());
             }
 
             EditMessageText editMessageText = new EditMessageText();
             editMessageText.setMessageId(message.getMessageId());
             editMessageText.setReplyMarkup(getResumeReplyMarkup(user.getToken()));
             editMessageText.setChatId(String.valueOf(user.getChatId()));
-            editMessageText.setText(vacancy.get(indexVacancy).toString());
+            editMessageText.setText(vacancies.get(indexVacancy).toString());
             sendBotMessageService.updateMessage(editMessageText);
         }
     }
@@ -125,7 +133,7 @@ public class VacancyCommand implements State {
         VacancyResponseObject vacancyResponseObj = resumeService.getVacancyResponse(token, selectedResume.getId());
 
         for (VacancyResponse vacancyResp : vacancyResponseObj.getObjects()) {
-            if (vacancyResp.getId_vacancy() == vacancy.get(indexVacancy).getId()) {
+            if (vacancyResp.getId_vacancy() == vacancies.get(indexVacancy).getId()) {
                 rowsInline.add(sendBotMessageService.createRow("Отклик отправлен", "vacancyResponseTrue"));
                 break;
             }

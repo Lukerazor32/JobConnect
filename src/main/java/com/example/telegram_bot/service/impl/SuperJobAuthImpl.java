@@ -39,7 +39,7 @@ public class SuperJobAuthImpl implements SuperJobAuth {
 
     @Override
     public String getAuthURL(String chatId) {
-        return String.format("<a href='%s'>Авторизироваться</a>", Unirest.get(String.format("%s/authorize/", superJobPath))
+        return String.format("<a href='%s'>Авторизоваться</a>", Unirest.get(String.format("%s/authorize/", superJobPath))
                 .queryString("client_id", client_id)
                 .queryString("redirect_uri", callback)
                 .queryString("state", chatId)

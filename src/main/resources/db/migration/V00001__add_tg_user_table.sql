@@ -6,4 +6,7 @@ CREATE TABLE tg_user (chat_id INTEGER NOT NULL,
                       firstname VARCHAR,
                       lastname VARCHAR,
                       access_token VARCHAR,
-                      refresh_token VARCHAR);
+                      refresh_token VARCHAR,
+                      resume_subscription_id INTEGER,
+                      last_date_vacancy BIGINT,
+                      is_subscript BOOLEAN NOT NULL);
