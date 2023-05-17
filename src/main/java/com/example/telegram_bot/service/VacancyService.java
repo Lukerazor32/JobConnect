@@ -11,5 +11,7 @@ public interface VacancyService {
 
     List<Vacancy> getVacanciesOrderByDate(String authToken, int idResume);
 
+    Vacancy getVacancyById(String authToken, int idVacancy);
+
     boolean sendResponseToVacancy(String authToken, int idResume, int idVacancy);
 }

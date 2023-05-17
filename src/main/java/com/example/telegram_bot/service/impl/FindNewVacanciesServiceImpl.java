@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -39,7 +40,6 @@ public class FindNewVacanciesServiceImpl implements FindNewVacanciesService {
                     Long dateLastVacancy = telegramUser.getLastDateVacancy();
                     if (resumeId != null && token != null && telegramUser.getIsSubscript() != false) {
                         List<Vacancy> sortedVacancies = vacancyService.getVacanciesOrderByDate(token, resumeId);
-
                         if (dateLastVacancy == null) {
                             telegramUser.setLastDateVacancy((long) sortedVacancies.get(0).getDate_published());
                             telegramUserService.save(telegramUser);
@@ -53,14 +53,18 @@ public class FindNewVacanciesServiceImpl implements FindNewVacanciesService {
                             } else {
                                 break;
                             }
+                            if (newVacancy.size() >= 15) {
+                                break;
+                            }
                         }
 
+                        Collections.reverse(newVacancy);
                         if (newVacancy.size() > 0) {
                             for (Vacancy vacancy : newVacancy) {
                                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-                                VacancyResponseObject vacancyResponseObj = resumeService.getVacancyResponse(token, resumeId);
+                                VacancyResponseObject vacancyResponseObj = resumeService.getVacancyResponsesByResume(token, resumeId);
 
                                 for (VacancyResponse vacancyResp : vacancyResponseObj.getObjects()) {
                                     if (vacancyResp.getId_vacancy() == vacancy.getId()) {
@@ -69,15 +73,17 @@ public class FindNewVacanciesServiceImpl implements FindNewVacanciesService {
                                     }
                                 }
                                 if (rowsInline.size() == 0) {
-                                    rowsInline.add(sendBotMessageService.createRow("Отправить отклик на вакансию", "SubscriptResponseFalse " + vacancy.getId()));
+                                    rowsInline.add(sendBotMessageService.createRow("Отправить отклик на вакансию",
+                                            "SubscriptResponseFalse "
+                                            + resumeId + " "
+                                            + vacancy.getId() + " "));
                                 }
 
                                 markupInline.setKeyboard(rowsInline);
                                 sendBotMessageService.setReplyMarkup(markupInline);
-                                sendBotMessageService.sendMessage(telegramUser.getChatId(), vacancy.toString());
+                                sendBotMessageService.sendMessage(telegramUser.getChatId(), String.format("Найдена новая вакансия!\n\n%s", vacancy.toString()));
                             }
-                            Collections.sort(newVacancy);
-                            telegramUser.setLastDateVacancy((long) newVacancy.get(0).getDate_published());
+                            telegramUser.setLastDateVacancy((long) newVacancy.get(newVacancy.size()-1).getDate_published());
                             telegramUserService.save(telegramUser);
                         }
                     }

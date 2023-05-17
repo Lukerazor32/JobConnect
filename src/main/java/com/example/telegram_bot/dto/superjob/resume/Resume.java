@@ -68,23 +68,27 @@ public class Resume {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("<b>%s</b>", profession) + "\n\n");
-        builder.append(String.format("<b>Состояние резюме - </b>%s", published.getTitle()) + "\n\n");
+        builder.append(String.format("<b>%s</b>", profession) + "\n");
+        builder.append(String.format("<b>Город:</b> %s", town.getTitle()) + "\n");
         builder.append(String.format("<b>%s</b>", "Возраст: ") + age + "\n\n");
-        builder.append("Тип занятости: " + type_of_work.getTitle() + "\n\n");
-        builder.append("Образование: " + education.getTitle() + "\n\n");
-        builder.append("Владение иностранными языками: " +
-                Arrays.stream(languages)
-                .flatMap(Arrays::stream)
-                .map(language -> language.getTitle())
-                .collect(Collectors.joining("\n")) + "\n\n");
-        builder.append("Категории и отрасли: \n" +
+        builder.append("<b>Тип занятости:</b> " + type_of_work.getTitle() + "\n\n");
+        builder.append("<b>Образование:</b> " + education.getTitle() + "\n\n");
+        if (languages.length > 0) {
+            builder.append("<b>Владение иностранными языками:</b> " +
+                    Arrays.stream(languages)
+                            .flatMap(Arrays::stream)
+                            .map(language -> language.getTitle())
+                            .collect(Collectors.joining("\n")) + "\n\n");
+        }
+
+        builder.append("<b>Категории и отрасли:</b> \n" +
                 Arrays.stream(catalogues)
                         .map(catalogue -> catalogue.getTitle() + " " +
                                 Arrays.stream(catalogue.getPositions())
                                         .map(position -> position.getTitle())
                                         .collect(Collectors.joining("\n")))
-                        .collect(Collectors.joining("\n")));
+                        .collect(Collectors.joining("\n")) + "\n\n");
+        builder.append(String.format("<b>Состояние резюме - </b>%s", published.getTitle()));
 
         String result = builder.toString();
         return result;

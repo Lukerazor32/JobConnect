@@ -5,6 +5,8 @@ import com.example.telegram_bot.command.CommandContainer;
 import com.example.telegram_bot.command.CommandName;
 import com.example.telegram_bot.command.NoCommand;
 import com.example.telegram_bot.command.StartCommand;
+import com.example.telegram_bot.command.subscript.CheckVacancyRequestCommand;
+import com.example.telegram_bot.dto.superjob.Vacancy;
 import com.example.telegram_bot.repository.entity.TelegramUser;
 import com.example.telegram_bot.service.*;
 import com.example.telegram_bot.service.impl.SendBotMessageServiceImpl;
@@ -26,6 +28,7 @@ public class JobConnect extends TelegramLongPollingBot {
     private final CommandContainer commandContainer;
     private final SendBotMessageService sendBotMessageService;
     private final TelegramUserService telegramUserService;
+    private final VacancyService vacancyService;
     private final SuperJobAuth superJobAuth;
     private ExecutorService executor;
     private List<User> activeUsers;
@@ -45,6 +48,7 @@ public class JobConnect extends TelegramLongPollingBot {
                       VacancyService vacancyService) {
         sendBotMessageService = new SendBotMessageServiceImpl(this);
         this.telegramUserService = telegramUserService;
+        this.vacancyService = vacancyService;
         this.superJobAuth = superJobAuth;
         this.commandContainer = new CommandContainer(sendBotMessageService,
                 telegramUserService,
@@ -117,6 +121,14 @@ public class JobConnect extends TelegramLongPollingBot {
                             user.getState().startState(update, user);
                             return;
                         }
+                    }
+                }
+
+                if (update.hasCallbackQuery()) {
+                    if (update.getCallbackQuery().getData().contains("SubscriptResponseFalse")) {
+                        user.setState(new CheckVacancyRequestCommand(sendBotMessageService, vacancyService));
+                        user.getState().startState(update, user);
+                        return;
                     }
                 }
 

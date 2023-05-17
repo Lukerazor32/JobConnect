@@ -30,6 +30,9 @@ public class TelegramUser {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column(name = "last_date_view_response")
+    private Long lastDateViewResponse;
+
     @Column(name = "resume_subscription_id")
     private Integer resumeSubscriptionId;
 

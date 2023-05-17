@@ -45,13 +45,13 @@ public class VacancyCommand implements State {
         this.telegramUserService = telegramUserService;
         this.resumeService = resumeService;
         this.vacancyService = vacancyService;
+        indexVacancy = 0;
+        page = 1;
     }
 
     @Override
     public void startState(Update update, User user) {
         if (!update.hasCallbackQuery()) {
-            indexVacancy = 0;
-            page = 1;
             resumeData = resumeService.getResumes(user.getToken());
             if (resumeData.getTotal() > 0) {
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -83,7 +83,7 @@ public class VacancyCommand implements State {
                     int resumeId = Integer.parseInt(callbackData.split(" ")[1]);
                     selectedResume = resumeData.getObjects()[resumeId];
                     if (selectedResume.getPublished().getId() == 1) {
-                        vacancies = vacancyService.getVacancies(user.getToken(), selectedResume.getId(), page);
+                        vacancies = vacancyService.getVacanciesOrderByDate(user.getToken(), selectedResume.getId());
                         if (vacancies != null && vacancies.size() > 1) {
                             sendBotMessageService.setReplyMarkup(getResumeReplyMarkup(user.getToken()));
                             message = sendBotMessageService.sendMessage(user.getChatId(), vacancies.get(indexVacancy).toString());
@@ -112,7 +112,9 @@ public class VacancyCommand implements State {
             } else if (callbackData.equals("vacancyResponseFalse")) {
                 vacancyService.sendResponseToVacancy(user.getToken(), selectedResume.getId(), vacancies.get(indexVacancy).getId());
             }
-
+            if (vacancies.get(indexVacancy).getCandidat() == null) {
+                execute(update, user);
+            }
             EditMessageText editMessageText = new EditMessageText();
             editMessageText.setMessageId(message.getMessageId());
             editMessageText.setReplyMarkup(getResumeReplyMarkup(user.getToken()));
@@ -130,7 +132,7 @@ public class VacancyCommand implements State {
         nextBackButtons.add(sendBotMessageService.createRow("➡", "next").get(0));
         rowsInline.add(nextBackButtons);
 
-        VacancyResponseObject vacancyResponseObj = resumeService.getVacancyResponse(token, selectedResume.getId());
+        VacancyResponseObject vacancyResponseObj = resumeService.getVacancyResponsesByResume(token, selectedResume.getId());
 
         for (VacancyResponse vacancyResp : vacancyResponseObj.getObjects()) {
             if (vacancyResp.getId_vacancy() == vacancies.get(indexVacancy).getId()) {

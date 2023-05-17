@@ -30,6 +30,11 @@ public class TelegramUserServiceImpl implements TelegramUserService {
     }
 
     @Override
+    public Optional<TelegramUser> findByAccessToken(String token) {
+        return telegramUserRepository.findTelegramUserByAccessToken(token);
+    }
+
+    @Override
     public List<TelegramUser> findAll() {
         return telegramUserRepository.findAll();
     }

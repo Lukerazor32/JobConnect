@@ -74,18 +74,18 @@ public class Vacancy implements Comparable<Vacancy> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("<b>%s</b>", profession) + "\n\n");
-        if (town.getTitle().equals("")) {
-            builder.append(String.format("<b>Город:</b>", town.getTitle()) + "\n\n");
+        builder.append(String.format("<b>%s</b>", profession) + "\n");
+        if (!town.getTitle().equals("")) {
+            builder.append(String.format("<b>Город:</b> %s", town.getTitle()) + "\n");
         }
         if (address != null && !address.equals("")) {
-            builder.append(String.format("<b>Адрес:</b>", address) + "\n\n");
+            builder.append(String.format("<b>Адрес:</b> %s", address) + "\n");
         }
+        builder.append("\n");
 
         builder.append(String.format("<b>Описание:</b>\n%s", candidat) + "\n\n");
 
-        String result = builder.toString();
-        return result;
+        return builder.toString();
     }
 
     @Override

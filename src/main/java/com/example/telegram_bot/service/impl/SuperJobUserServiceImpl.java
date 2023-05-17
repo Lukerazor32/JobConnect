@@ -1,9 +1,11 @@
 package com.example.telegram_bot.service.impl;
 
 import com.example.telegram_bot.dto.superjob.*;
+import com.example.telegram_bot.repository.MyUtils;
 import com.example.telegram_bot.service.SuperJobUserService;
 import com.google.gson.JsonObject;
 import kong.unirest.GenericType;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,13 +32,15 @@ public class SuperJobUserServiceImpl implements SuperJobUserService {
         headerProp.put("X-Api-App-Id", secretKey);
         headerProp.put("Authorization", String.format("Bearer %s", authToken));
         headerProp.put("Content-Type", "application/json");
-        JsonObject jsonResponse = Unirest.post(String.format("%s/subscriptions/", superJobAPIPath))
+        HttpResponse<JsonObject> response = Unirest.post(String.format("%s/subscriptions/", superJobAPIPath))
                 .headers(headerProp)
                 .body(args.populateQueries())
-                .asObject(JsonObject.class)
-                .getBody();
-        if (jsonResponse.has("id")) {
+                .asObject(JsonObject.class);
+        if (response.getStatus() == 200 && response.getBody().has("id")) {
             return true;
+        } else if (response.getStatus() == 410) {
+            MyUtils.updateToken(authToken);
+            createSubscriptVacancy(authToken, args);
         }
         return false;
     }
