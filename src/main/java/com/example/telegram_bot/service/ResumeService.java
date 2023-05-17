@@ -9,5 +9,7 @@ public interface ResumeService {
 
     void createResume(String authToken);
 
-    VacancyResponseObject getVacancyResponse(String authToken, int idResume);
+    VacancyResponseObject getVacancyResponses(String authToken);
+
+    VacancyResponseObject getVacancyResponsesByResume(String authToken, int idResume);
 }

@@ -1,9 +1,11 @@
 package com.example.telegram_bot.dto.superjob;
 
 import com.example.telegram_bot.dto.superjob.resume.Town;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class Client {
     private int id;
     private String title;

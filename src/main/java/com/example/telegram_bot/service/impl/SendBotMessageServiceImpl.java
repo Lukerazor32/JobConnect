@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -38,10 +39,12 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
         sendMessage.enableHtml(true);
         sendMessage.setText(message);
 
-
         try {
             return jobConnect.execute(sendMessage);
         } catch (TelegramApiException e) {
+            if (e.getMessage().contains("Too Many Requests")) {
+
+            }
             e.printStackTrace();
         }
         finally {
@@ -49,6 +52,7 @@ public class SendBotMessageServiceImpl implements SendBotMessageService {
         }
         return null;
     }
+
 
     public void updateMessage(EditMessageText editMessageText) {
         editMessageText.enableHtml(true);

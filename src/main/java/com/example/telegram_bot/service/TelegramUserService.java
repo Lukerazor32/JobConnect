@@ -1,6 +1,7 @@
 package com.example.telegram_bot.service;
 
 import com.example.telegram_bot.repository.entity.TelegramUser;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,8 @@ public interface TelegramUserService {
      * @return {@link TelegramUser} with provided chat ID or null otherwise.
      */
     Optional<TelegramUser> findByChatId(Long chatId);
+
+    Optional<TelegramUser> findByAccessToken(String token);
 
     List<TelegramUser> findAll();
 }

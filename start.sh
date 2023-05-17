@@ -8,7 +8,7 @@ mvn package
 docker-compose stop
 
 # Add environment variables
-export BOT_NAME='Good_music_taste_bot'
+export BOT_NAME='Job_Connect_Bot'
 export BOT_TOKEN='${BOT_TOKEN}'
 export BOT_DB_USERNAME='job_connect_user'
 export BOT_DB_PASSWORD='${BOT_DB_PASSWORD}'
