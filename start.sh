@@ -1,17 +1,16 @@
 #!/bin/bash
+set -e
 
-# Prepare Jar
-mvn clean
-mvn package
+# Сборка jar
+mvn clean package
 
-#Ensure, that docker-compose stopped
-docker-compose stop
+# Остановить предыдущий деплой
+docker-compose stop || true
 
-# Add environment variables
-export BOT_NAME='Job_Connect_Bot'
-export BOT_TOKEN='${BOT_TOKEN}'
-export BOT_DB_USERNAME='job_connect_user'
-export BOT_DB_PASSWORD='${BOT_DB_PASSWORD}'
+# Переменные окружения берём из .env (шаблон — .env.example)
+set -a
+[ -f .env ] && . ./.env
+set +a
 
-# Start new deployment
+# Запуск
 docker-compose up --build -d

@@ -9,12 +9,12 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>MUSIC_BOT</artifactId>
+	<artifactId>job-connect</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>MUSIC_BOT</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
